@@ -1,0 +1,10 @@
+Our backend uses JWT authentication.
+
+When a user logs in, the server validates their
+credentials and generates a JWT access token.
+
+The access token expires after 15 minutes.
+
+Redis is used for caching frequently accessed data.
+
+PostgreSQL stores user information and application data.
