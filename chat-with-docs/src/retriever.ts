@@ -1,7 +1,8 @@
 
-import { vectorStore } from "./vector-store.js";
 import { generateEmbedding } from "./embedding.js";
-import { cosineSimilarity } from "./similarity.js";
+import {
+  searchSimilarChunks,
+} from "./repositories/chunk.repository.js";
 
 export async function retrieve(
   question: string,
@@ -10,15 +11,5 @@ export async function retrieve(
   const queryEmbedding =
     await generateEmbedding(question);
 
-  const results = vectorStore.map((chunk) => ({
-    ...chunk,
-    score: cosineSimilarity(
-      queryEmbedding,
-      chunk.embedding
-    ),
-  }));
-
-  return results
-    .sort((a, b) => b.score - a.score)
-    .slice(0, Math.max(0, topK));
+  return searchSimilarChunks(queryEmbedding, topK);
 }
