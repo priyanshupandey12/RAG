@@ -7,4 +7,6 @@ The access token expires after 15 minutes.
 
 Redis is used for caching frequently accessed data.
 
-PostgreSQL stores user information and application data.
+PostgreSQL stores user information and application data
+
+document changed!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!.

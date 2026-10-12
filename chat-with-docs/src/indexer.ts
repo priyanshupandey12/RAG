@@ -2,25 +2,48 @@
 import { readFile } from "node:fs/promises";
 import { chunkText } from "./chunking.js";
 import { generateEmbedding } from "./embedding.js";
-import { vectorStore } from "./vector-store.js";
-import { saveChunk } from "./repositories/chunk.repository.js";
+import { generateHash } from "./utils/hash.js";
+import {
+  findDocumentById,
+  replaceDocumentChunks,
+  type ChunkToSave,
+} from "./repositories/document.repository.js";
 
 export async function indexDocument(
   filePath: string
 ): Promise<void> {
+  const documentId = "backend-document";
+
   const document = await readFile(filePath, "utf-8");
+  const contentHash = generateHash(document);
+
+  const existingDocument = await findDocumentById(documentId);
+
+  if (existingDocument?.content_hash === contentHash) {
+    console.log("Document unchanged. Skipping indexing.");
+    return;
+  }
+
+  console.log("New or modified document detected.");
 
   const chunks = chunkText(document, 100, 20);
 
-  for (const [index, chunk] of chunks.entries()) {
+  const preparedChunks: ChunkToSave[] = [];
+
+  for (const chunk of chunks) {
     const embedding = await generateEmbedding(chunk);
 
-  await saveChunk(
-    "backend-document",
-    chunk,
-    embedding
-  );
+    preparedChunks.push({
+      content: chunk,
+      embedding,
+    });
   }
 
-  console.log(`Indexed ${chunks.length} chunks`);
+  await replaceDocumentChunks(
+    documentId,
+    contentHash,
+    preparedChunks
+  );
+
+  console.log("Document indexed successfully!");
 }
