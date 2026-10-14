@@ -3,13 +3,18 @@ import { retrieve } from "./retriever.js";
 import { generateAnswer } from "./generation.js";
 
 export async function askQuestion(
-  question: string
+  question: string,
+  documentId: string
 ): Promise<string> {
-  const results = await retrieve(question, 3);
+  const results = await retrieve(question, documentId, 3);
+
+  if (results.length === 0) {
+    return "No relevant document content found.";
+  }
 
   const context = results
-  .map((result) => result.content)
-  .join("\n\n");
+    .map((result) => result.content)
+    .join("\n\n");
 
   return generateAnswer(question, context);
 }

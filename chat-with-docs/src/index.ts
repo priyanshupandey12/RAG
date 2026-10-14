@@ -1,19 +1,12 @@
 
 import { askQuestion } from "./ask.js";
 import { pool } from "./db.js";
-import { indexDocument } from "./indexer.js";
-import { fileURLToPath } from "node:url";
 
 async function main() {
   try {
-    const documentPath = fileURLToPath(
-      new URL("./document/document.txt", import.meta.url)
-    );
-
-    await indexDocument(documentPath);
-
     const answer = await askQuestion(
-      "How does JWT authentication work?"
+      "who is John Doe?",
+      "backend-document"
     );
 
     console.log("Gemini Answer:", answer);

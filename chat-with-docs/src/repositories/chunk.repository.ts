@@ -27,9 +27,13 @@ export interface SearchResult {
   similarity: number;
 }
 
+
+
 export async function searchSimilarChunks(
   queryEmbedding: number[],
-  topK: number = 3
+  documentId: string,
+  topK: number = 3,
+  minSimilarity: number = 0.7
 ): Promise<SearchResult[]> {
   const query = `
     SELECT
@@ -38,14 +42,20 @@ export async function searchSimilarChunks(
       content,
       1 - (embedding <=> $1::vector) AS similarity
     FROM document_chunks
+    WHERE document_id = $2
+      AND 1 - (embedding <=> $1::vector) >= $3
     ORDER BY embedding <=> $1::vector
-    LIMIT $2
+    LIMIT $4
   `;
 
   const result = await pool.query<SearchResult>(query, [
     JSON.stringify(queryEmbedding),
+    documentId,
+    minSimilarity,
     topK,
   ]);
 
   return result.rows;
 }
+
+
