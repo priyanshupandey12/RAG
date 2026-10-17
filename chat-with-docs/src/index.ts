@@ -5,7 +5,7 @@ import { pool } from "./db.js";
 async function main() {
   try {
     const answer = await askQuestion(
-      "who is John Doe?",
+      "How does our backend handle JWT authentication?",
       "backend-document"
     );
 
